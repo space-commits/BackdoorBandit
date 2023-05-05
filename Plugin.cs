@@ -13,21 +13,14 @@ namespace DoorBreach
     [BepInPlugin("com.dvize.BackdoorBandit", "dvize.BackdoorBandit", "1.2.1")]
     public class DoorBreachPlugin : BaseUnityPlugin
     {
-        public static ConfigEntry<bool> PlebMode;
+
         public static int interactiveLayer;
         private void Awake()
         {
             CheckEftVersion();
-
-            PlebMode = Config.Bind(
-                "Main Settings",
-                "PlebMode",
-                false,
-                "Enabled means no requirements to breaching doors.");
-
-            
             new NewGamePatch().Enable();
-            new BackdoorBandit.ApplyHit().Enable();
+            new ApplyHitPatch().Enable();
+            new ExplosionPatch().Enable();
         }
 
         private void CheckEftVersion()
@@ -41,21 +34,6 @@ namespace DoorBreach
                 EFT.UI.ConsoleScreen.LogError($"ERROR: This version of {Info.Metadata.Name} v{Info.Metadata.Version} was built for Tarkov {buildVersion}, but you are running {currentVersion}. Please download the correct plugin version.");
                 throw new Exception($"Invalid EFT Version ({currentVersion} != {buildVersion})");
             }
-        }
-    }
-
-    //re-initializes each new game
-    internal class NewGamePatch : ModulePatch
-    {
-        protected override MethodBase GetTargetMethod() => typeof(GameWorld).GetMethod(nameof(GameWorld.OnGameStarted));
-
-        [PatchPrefix]
-        public static void PatchPrefix()
-        {
-            //stolen from drakiaxyz - thanks
-            DoorBreachPlugin.interactiveLayer = LayerMask.NameToLayer("Interactive");
-
-            BackdoorBandit.DoorBreachComponent.Enable();
         }
     }
 }
