@@ -1,13 +1,12 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
-using VersionChecker;
 
 [assembly: AssemblyTitle("dvize.BackdoorBandit")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("dvize.BackdoorBandit")]
-[assembly: AssemblyCopyright("Copyright ©  2023")]
+[assembly: AssemblyCopyright("Copyright ï¿½  2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,4 +19,4 @@ using VersionChecker;
 
 [assembly: AssemblyVersion("1.2.1.0")]
 [assembly: AssemblyFileVersion("1.2.1.0")]
-[assembly: TarkovVersion(22617)]
+

@@ -43,7 +43,7 @@ namespace DoorBreach
 
         protected override MethodBase GetTargetMethod()
         {
-            return typeof(GClass1595).GetMethod("Explosion", BindingFlags.Static | BindingFlags.Public);
+            return typeof(GClass1594).GetMethod("Explosion", BindingFlags.Static | BindingFlags.Public);
         }
 
         [PatchPrefix]
@@ -78,7 +78,7 @@ namespace DoorBreach
                         {
                             Player player = di.Player;
                             door.interactWithoutAnimation = true;
-                            di.Player.CurrentState.ExecuteDoorInteraction(door, new GClass2599(EInteractionType.Breach), null, player);
+                            di.Player.CurrentState.ExecuteDoorInteraction(door, new GClass2600(EInteractionType.Breach), null, player);
                             door.interactWithoutAnimation = false;
                         }
                     }
@@ -114,7 +114,7 @@ namespace DoorBreach
 
             if (col.GetComponentInParent<Door>().GetComponentInChildren<DoorHandle>() != null)
             {
-                float distance = isMelee ? 0.5f : 0.1f;
+                float distance = isMelee ? 0.7f : 0.25f;
                 Vector3 localHitPoint = col.transform.InverseTransformPoint(damageInfo.HitPoint);
                 DoorHandle doorHandle = col.GetComponentInParent<Door>().GetComponentInChildren<DoorHandle>();
                 Vector3 doorHandleLocalPos = doorHandle.transform.localPosition;
@@ -178,7 +178,6 @@ namespace DoorBreach
                     }
 
                 }
-                Logger.LogWarning("end");
             }
             return false;
         }
@@ -209,7 +208,7 @@ namespace DoorBreach
                             hitpoints.hitpoints -= damage;
                             if (hitpoints.hitpoints <= 0)
                             {
-                                damageInfo.Player.CurrentState.ExecuteDoorInteraction(door, new GClass2599(EInteractionType.Breach), null, damageInfo.Player);
+                                damageInfo.Player.CurrentState.ExecuteDoorInteraction(door, new GClass2600(EInteractionType.Breach), null, damageInfo.Player);
                             }
                         }
                     }
