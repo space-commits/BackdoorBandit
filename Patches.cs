@@ -36,7 +36,7 @@ namespace DoorBreach
 
     public class ExplosionPatch : ModulePatch
     {
-        private static Hitpoints hitpoints;
+        private static Breaching breaching;
         private static Door door;
 
         private static Collider[] colliders = new Collider[512];
@@ -57,7 +57,7 @@ namespace DoorBreach
             {
                 Collider collider = colliders[i];
                 bool isDoor = collider.GetComponentInParent<Door>() != null;
-                bool hasHitPoints = collider.GetComponentInParent<Hitpoints>() != null;
+                bool hasHitPoints = collider.GetComponentInParent<Breaching>() != null;
                 if (isDoor && hasHitPoints) 
                 {
                     door = collider.GetComponentInParent<Door>();
@@ -69,12 +69,12 @@ namespace DoorBreach
                    
                         Logger.LogWarning("removing hit points");
 
-                        hitpoints = collider.GetComponentInParent<Hitpoints>() as Hitpoints;
-                        hitpoints.hitpoints -= damage;
+                        breaching = collider.GetComponentInParent<Breaching>() as Breaching;
+                        breaching.hitpoints -= damage;
                         Logger.LogWarning("damage = " + damage);
-                        Logger.LogWarning("hitpoints = " + hitpoints.hitpoints);
+                        Logger.LogWarning("hitpoints = " + breaching.hitpoints);
       
-                        if (hitpoints.hitpoints <= 0)
+                        if (breaching.hitpoints <= 0)
                         {
                             Player player = di.Player;
                             door.interactWithoutAnimation = true;
@@ -105,7 +105,7 @@ namespace DoorBreach
             "57cd379a24597778e7682ecf" //Kiba Tomahawk
         };
 
-        private static Hitpoints hitpoints;
+        private static Breaching breaching;
         private static Door door;
 
         private static bool isValidHit(DamageInfo damageInfo, bool isMelee)
@@ -124,7 +124,7 @@ namespace DoorBreach
             return false;
         }
 
-        private static bool isValid(Player player, DamageInfo damageInfo, ref float damage)
+        private static bool isValid(Player player, DamageInfo damageInfo, bool canBeShot, ref float damage)
         {
             if (damageInfo.DamageType == EDamageType.GrenadeFragment)
             {
@@ -172,7 +172,7 @@ namespace DoorBreach
                     var bulletTemplate = Singleton<ItemFactory>.Instance.ItemTemplates[damageInfo.SourceId] as AmmoTemplate;
                     bool validHandleWeapon = bulletTemplate.Caliber == "Caliber20g" || bulletTemplate.Caliber == "Caliber12g" || bulletTemplate.Caliber == "Caliber23x75" || bulletTemplate.Caliber == "Caliber40x46" || bulletTemplate.Caliber == "Caliber127x55" || bulletTemplate.Caliber == "Caliber86x70";
 
-                    if (validHit && validHandleWeapon)
+                    if (validHit && validHandleWeapon && canBeShot)
                     {
                         return true;
                     }
@@ -197,16 +197,17 @@ namespace DoorBreach
                 if (collider != null)
                 {
                     bool isDoor = collider.GetComponentInParent<Door>() != null;
-                    bool hasHitPoints = collider.GetComponentInParent<Hitpoints>() != null;
+                    bool hasHitPoints = collider.GetComponentInParent<Breaching>() != null;
                     if (isDoor && hasHitPoints)
                     {
+                        door = collider.GetComponentInParent<Door>();
+                        breaching = collider.GetComponentInParent<Breaching>() as Breaching;
+                        bool canBeShot = breaching.canBeShot;   
                         float damage = damageInfo.Damage;
-                        if (isValid(damageInfo.Player, damageInfo, ref damage))
+                        if (isValid(damageInfo.Player, damageInfo, canBeShot, ref damage))
                         {
-                            door = collider.GetComponentInParent<Door>();
-                            hitpoints = collider.GetComponentInParent<Hitpoints>() as Hitpoints;
-                            hitpoints.hitpoints -= damage;
-                            if (hitpoints.hitpoints <= 0)
+                            breaching.hitpoints -= damage;
+                            if (breaching.hitpoints <= 0)
                             {
                                 damageInfo.Player.CurrentState.ExecuteDoorInteraction(door, new GClass2600(EInteractionType.Breach), null, damageInfo.Player);
                             }

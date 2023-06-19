@@ -13,9 +13,10 @@ using EFT.Ballistics;
 namespace DoorBreach
 {
     //create hitpoints unityengine.component
-    internal class Hitpoints : MonoBehaviour
+    internal class Breaching : MonoBehaviour
     {
         public float hitpoints;
+        public bool canBeShot;
     }
 
     public class DoorBreachComponent : MonoBehaviour
@@ -38,21 +39,25 @@ namespace DoorBreach
                     return;
                 }
 
-                int randomInt = UnityEngine.Random.Range(0, 11);
-                if (randomInt <= 3) 
-                {
-                    return;
-                }
-
-                Hitpoints hitpoints = door.gameObject.GetOrAddComponent<Hitpoints>();
+                Breaching breachingComponent = door.gameObject.GetOrAddComponent<Breaching>();
                 BallisticCollider ballsCol = door.GetComponentInChildren<BallisticCollider>();
+
+                int randomInt = UnityEngine.Random.Range(0, 11);
+                if (randomInt <= 4)
+                {
+                    breachingComponent.canBeShot = false;
+                }
+                else 
+                {
+                    breachingComponent.canBeShot = true;
+                }
                 if (ballsCol.TypeOfMaterial == MaterialType.MetalThick || ballsCol.TypeOfMaterial == MaterialType.MetalThin)
                 {
-                    hitpoints.hitpoints = UnityEngine.Random.Range(400, 600);
+                    breachingComponent.hitpoints = UnityEngine.Random.Range(450, 650);
                 }
                 else
                 {
-                    hitpoints.hitpoints = UnityEngine.Random.Range(200, 400);
+                    breachingComponent.hitpoints = UnityEngine.Random.Range(250, 450);
                 }
 
                 door.OnEnable();
