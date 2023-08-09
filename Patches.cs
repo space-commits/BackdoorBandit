@@ -14,6 +14,8 @@ using HarmonyLib;
 using HarmonyLib.Tools;
 using UnityEngine;
 using static System.Net.Mime.MediaTypeNames;
+using ExplosionClass = GClass1658;
+using InteractionTypeClass = GClass2846;
 
 namespace DoorBreach
 {
@@ -43,7 +45,7 @@ namespace DoorBreach
 
         protected override MethodBase GetTargetMethod()
         {
-            return typeof(GClass1594).GetMethod("Explosion", BindingFlags.Static | BindingFlags.Public);
+            return typeof(ExplosionClass).GetMethod("Explosion", BindingFlags.Static | BindingFlags.Public);
         }
 
         [PatchPrefix]
@@ -76,9 +78,9 @@ namespace DoorBreach
       
                         if (breaching.hitpoints <= 0)
                         {
-                            Player player = di.Player;
+                            Player player = Singleton<GameWorld>.Instance.MainPlayer;
                             door.interactWithoutAnimation = true;
-                            di.Player.CurrentState.ExecuteDoorInteraction(door, new GClass2600(EInteractionType.Breach), null, player);
+                            player.CurrentManagedState.ExecuteDoorInteraction(door, new InteractionTypeClass(EInteractionType.Breach), null, player);
                             door.interactWithoutAnimation = false;
                         }
                     }
@@ -194,6 +196,7 @@ namespace DoorBreach
             if (damageInfo.DamageType != EDamageType.Explosion && damageInfo.HittedBallisticCollider.HitType != EFT.NetworkPackets.EHitType.Lamp && damageInfo.HittedBallisticCollider.HitType != EFT.NetworkPackets.EHitType.Window) 
             {
                 Collider collider = damageInfo.HitCollider;
+                Player player = Singleton<GameWorld>.Instance.MainPlayer;
                 if (collider != null)
                 {
                     bool isDoor = collider.GetComponentInParent<Door>() != null;
@@ -204,12 +207,12 @@ namespace DoorBreach
                         breaching = collider.GetComponentInParent<Breaching>() as Breaching;
                         bool canBeShot = breaching.canBeShot;   
                         float damage = damageInfo.Damage;
-                        if (isValid(damageInfo.Player, damageInfo, canBeShot, ref damage))
+                        if (isValid(player, damageInfo, canBeShot, ref damage))
                         {
                             breaching.hitpoints -= damage;
                             if (breaching.hitpoints <= 0)
                             {
-                                damageInfo.Player.CurrentState.ExecuteDoorInteraction(door, new GClass2600(EInteractionType.Breach), null, damageInfo.Player);
+                                player.CurrentManagedState.ExecuteDoorInteraction(door, new InteractionTypeClass(EInteractionType.Breach), null, player);
                             }
                         }
                     }
